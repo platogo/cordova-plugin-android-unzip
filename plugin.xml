@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+           id="com.platogo.cordova.androidunzip"
+      version="0.1.0">
+    <name>Cordova Unzip Plugin for Android</name>
+    <description>Cordova Unzip Plugin for Android</description>
+
+    <js-module src="www/android-unzip.js" name="AndroidUnzip">
+        <clobbers target="window.androidUnzip" />
+    </js-module>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="AndroidUnzip">
+                <param name="android-package" value="com.platogo.cordova.androidunzip.AndroidUnzip" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/AndroidUnzip.java" target-dir="src/com/platogo/cordova/androidunzip" />
+     </platform>
+</plugin>
