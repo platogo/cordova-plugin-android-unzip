@@ -52,6 +52,8 @@ public class AndroidUnzip extends CordovaPlugin {
                     ZipFile zip = new ZipFile(zipFile);
                     Enumeration<? extends ZipEntry> e = zip.entries();
 
+                    ProgressEvent progress = new ProgressEvent(zip.size());
+
                     while (e.hasMoreElements()) {
                         ZipEntry entry = (ZipEntry)e.nextElement();
                         BufferedInputStream inputStream = new BufferedInputStream(zip.getInputStream(entry));
@@ -74,6 +76,9 @@ public class AndroidUnzip extends CordovaPlugin {
                             outputStream.close();
                             inputStream.close();
                         }
+
+                        progress.increment();
+                        updateProgress(callbackContext, progress);
                     }
 
                     zip.close();
@@ -94,6 +99,30 @@ public class AndroidUnzip extends CordovaPlugin {
             return resourceApi.mapUriToFile(uri);
         } else {
             return new File(arg);
+        }
+    }
+
+    private void updateProgress(CallbackContext callbackContext, ProgressEvent progress) throws JSONException {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, progress.toJSONObject());
+        pluginResult.setKeepCallback(true);
+        callbackContext.sendPluginResult(pluginResult);
+    }
+
+
+    private static class ProgressEvent {
+        private long loaded;
+        private long total;
+
+        public ProgressEvent(long total) {
+            this.total = total;
+        }
+
+        public void increment() {
+            this.loaded++;
+        }
+
+        public JSONObject toJSONObject() throws JSONException {
+            return new JSONObject("{loaded:" + loaded +",total:" + total + "}");
         }
     }
 }
