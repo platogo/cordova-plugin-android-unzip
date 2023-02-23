@@ -12,7 +12,3 @@ Usage
 	});
 </script>
 ```
-
-Compatibility
--------------
-Phonegap > 3.0.0
