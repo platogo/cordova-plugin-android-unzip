@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="cordova-plugin-androidunzip"
-      version="0.1.0">
+      version="0.1.1">
     <name>Cordova Unzip Plugin for Android</name>
     <description>Cordova Unzip Plugin for Android</description>
 
