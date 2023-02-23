@@ -15,11 +15,14 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.util.Log;
 
 public class AndroidUnzip extends CordovaPlugin {
     public static final String ACTION_UNZIP = "unzip";
 
     private static final int BUFFER_SIZE = 32 * 1024;
+
+    private static final String LOG_TAG = "Unzip";
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -36,13 +39,17 @@ public class AndroidUnzip extends CordovaPlugin {
                 try {
                     File zipFile = getFileForArg(zipFilePath);
                     if (zipFile == null || !zipFile.exists()) {
-                        callbackContext.error("Zip file does not exist");
+                        String message = "Zip file does not exist";
+                        callbackContext.error(message);
+                        Log.e(LOG_TAG, message);
                         return;
                     }
 
                     File destDir = getFileForArg(destPath);
                     if (destDir == null || (!destDir.exists() && !destDir.mkdirs())) {
-                        callbackContext.error("Could not create output directory");
+                        String message = "Could not create output directory";
+                        callbackContext.error(message);
+                        Log.e(LOG_TAG, message);
                         return;
                     }
 
@@ -61,6 +68,15 @@ public class AndroidUnzip extends CordovaPlugin {
                         int count;
                         byte data[] = new byte[BUFFER_SIZE];
                         File outputFile = new File(outputDirectory + entry.getName());
+
+                        String canonicalPath = outputFile.getCanonicalPath();
+                        String absolutePath = outputFile.getAbsolutePath();
+                        if (!canonicalPath.startsWith(outputDirectory) && !absolutePath.startsWith(outputDirectory)) {
+                            String errorMessage = "Zip traversal security error";
+                            callbackContext.error(errorMessage);
+                            Log.e(LOG_TAG, errorMessage);
+                            return;
+                        }
 
                         if (entry.isDirectory()) {
                             outputFile.mkdirs();
@@ -83,9 +99,12 @@ public class AndroidUnzip extends CordovaPlugin {
 
                     zip.close();
 
+                    Log.i(LOG_TAG, "Finishing unzip...");
                     callbackContext.success();
                 } catch(Exception e) {
-                    callbackContext.error(e.getMessage());
+                    String message = e.getMessage();
+                    callbackContext.error(message);
+                    Log.e(LOG_TAG, message);
                 }
             }
         });
